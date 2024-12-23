@@ -7,6 +7,8 @@
 #include <algorithm> // for std::find_if
 #include "Course.h"
 #include "Classroom.h"
+#include "Course.h"
+#include "Classroom.h"
 
 using namespace std;
 
@@ -88,9 +90,18 @@ public:
     void saveToFile(const std::string &filename) const
     {
         std::ofstream file(filename);
+        if (!file.is_open())
+        {
+            throw std::runtime_error("无法打开文件进行写入: " + filename);
+        }
+
         for (const auto &entry : entries)
         {
-            file << entry.course.name << " " << entry.classroom.name << "\n";
+            file << entry.course.name << " "
+                 << entry.course.time.toString() << " "
+                 << entry.course.studentCount << " "
+                 << entry.course.teacher << " "
+                 << entry.classroom.name << "\n";
         }
     }
 
@@ -110,29 +121,33 @@ public:
         while (std::getline(file, line))
         {
             std::istringstream iss(line);
-            std::string courseName, classroomName;
+            std::string courseName, timeString, teacher, classroomName;
+            int studentCount;
 
-            if (iss >> courseName >> classroomName)
+            if (iss >> courseName >> timeString >> studentCount >> teacher >> classroomName)
             {
-                // 查找课程和教室
-                const auto &courses = courseManager.getCourses();
+                // 查找对应的教室
                 const auto &classrooms = classroomManager.getClassrooms();
-
-                auto courseIt = std::find_if(courses.begin(), courses.end(),
-                                             [&courseName](const Course &c)
-                                             {
-                                                 return c.name == courseName;
-                                             });
-
                 auto classroomIt = std::find_if(classrooms.begin(), classrooms.end(),
                                                 [&classroomName](const Classroom &c)
                                                 {
                                                     return c.name == classroomName;
                                                 });
 
-                if (courseIt != courses.end() && classroomIt != classrooms.end())
+                if (classroomIt != classrooms.end())
                 {
-                    entries.push_back(ScheduleEntry{*courseIt, *classroomIt});
+                    // 直接使用现有的 Course 对象
+                    const auto &courses = courseManager.getCourses();
+                    auto courseIt = std::find_if(courses.begin(), courses.end(),
+                                                 [&courseName](const Course &c)
+                                                 {
+                                                     return c.name == courseName;
+                                                 });
+
+                    if (courseIt != courses.end())
+                    {
+                        entries.push_back(ScheduleEntry{*courseIt, *classroomIt});
+                    }
                 }
             }
         }
