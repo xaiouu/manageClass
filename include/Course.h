@@ -64,7 +64,7 @@ public:
         }
         
         std::string line;
-        int lineNum = 0;
+        int lineNum = 0;  // 测试用:解析到第几行
         while (std::getline(file, line)) {
             lineNum++;
             try {
@@ -73,12 +73,8 @@ public:
                 int studentCount;
                 
                 // 分步读取并打印调试信息
-                if (iss >> name >> dayStr >> timeStr >> studentCount >> teacher) {
-                    std::cout << "解析行 " << lineNum << ":" << std::endl;
-                    std::cout << "课程名: " << name << std::endl;
-                    std::cout << "星期: " << dayStr << std::endl;
-                    std::cout << "时间: " << timeStr << std::endl;
-                    
+                if (iss >> name >> dayStr >> timeStr >> studentCount >> teacher) 
+                {
                     // 解析时间字符串 (格式应该是 "09:00-11:00")
                     size_t dashPos = timeStr.find('-');
                     if (dashPos == std::string::npos) {
@@ -109,12 +105,6 @@ public:
                     // 创建 TimeSlot 对象
                     TimeSlot timeSlot{dayStr, startHour, startMinute, endHour, endMinute};
                     courses.emplace_back(name, timeSlot, studentCount, teacher);
-                    
-                    std::cout << "成功解析时间: " 
-                              << startHour << ":" << startMinute 
-                              << " - " 
-                              << endHour << ":" << endMinute 
-                              << std::endl;
                 }
             } catch (const std::exception& e) {
                 std::cerr << "第 " << lineNum << " 行解析错误: " << e.what() << std::endl;
