@@ -61,9 +61,9 @@ int main()
         schedule.addEntry(Course("生物", newTime, 25, "赵老师"), Classroom("E102", 35, 2));
 
         // 存储数据到文件
-        courseManager.saveToFile("courses.txt");
-        classroomManager.saveToFile("classrooms.txt");
-        schedule.saveToFile("schedule.txt");
+        courseManager.saveToFile(DATA_DIR + "courses.txt");
+        classroomManager.saveToFile(DATA_DIR + "classrooms.txt");
+        schedule.saveToFile(DATA_DIR + "schedule.txt");
 
         return 0;
     } catch (const std::exception& e) {
