@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -46,10 +47,21 @@ private:
     std::vector<Classroom> classrooms;
 
 public:
-    void addClassroom(const Classroom &classroom)
-    {
+    // 检查教室是否已存在
+    bool isClassroomExists(const std::string& name) const {
+        return std::any_of(classrooms.begin(), classrooms.end(),
+            [&name](const Classroom& room) { return room.name == name; });
+    }
+
+    // 修改添加教室的方法
+    bool addClassroom(const Classroom& classroom) {
+        if (isClassroomExists(classroom.name)) {
+            std::cout << "教室 \"" << classroom.name << "\" 已存在，无法重复添加。\n";
+            return false;
+        }
         classrooms.push_back(classroom);
         std::cout << "教室 \"" << classroom.name << "\" 添加成功。\n";
+        return true;
     }
 
     void listClassrooms() const

@@ -145,10 +145,6 @@ src/CMakeFiles/managerClass.dir/main.cpp.obj: \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/fstream.tcc \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/sstream \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/sstream.tcc \
- C:/cursorProject/c++/manageClass/include/TimeSlot.h \
- C:/cursorProject/c++/manageClass/include/Classroom.h \
- C:/cursorProject/c++/manageClass/include/Schedule.h \
- C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/limits \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/algorithm \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_algo.h \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/algorithmfwd.h \
@@ -157,6 +153,10 @@ src/CMakeFiles/managerClass.dir/main.cpp.obj: \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_tempbuf.h \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/pstl/glue_algorithm_defs.h \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/pstl/execution_defs.h \
+ C:/cursorProject/c++/manageClass/include/TimeSlot.h \
+ C:/cursorProject/c++/manageClass/include/Classroom.h \
+ C:/cursorProject/c++/manageClass/include/Schedule.h \
+ C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/limits \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/filesystem \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/fs_fwd.h \
  C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cstdint \
