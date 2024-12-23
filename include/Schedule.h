@@ -22,9 +22,20 @@ public:
     std::vector<ScheduleEntry> entries;
 
     // 添加排课记录
-    void addEntry(const Course &course, const Classroom &classroom)
+    bool addEntry(const Course &course, const Classroom &classroom)
     {
+        if (classroom.isAvailable(course.time.toString()))
+        {
+            std::cout << "无法安排课程 \"" << course.name
+                      << "\" 到教室 \"" << classroom.name
+                      << "\"：该教室在此时间段已有其他课程。\n";
+            return false;
+        }
+
         entries.push_back(ScheduleEntry{course, classroom});
+        std::cout << "成功安排课程 \"" << course.name
+                  << "\" 到教室 \"" << classroom.name << "\"。\n";
+        return true;
     }
 
     // 方法：为一个课程分配最合适的教室
