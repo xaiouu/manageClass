@@ -1,0 +1,5 @@
+C:/cursorProject/c++/manageClass/build/CMakeFiles/edit_cache.dir
+C:/cursorProject/c++/manageClass/build/CMakeFiles/rebuild_cache.dir
+C:/cursorProject/c++/manageClass/build/src/CMakeFiles/managerClass.dir
+C:/cursorProject/c++/manageClass/build/src/CMakeFiles/edit_cache.dir
+C:/cursorProject/c++/manageClass/build/src/CMakeFiles/rebuild_cache.dir

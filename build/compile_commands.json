@@ -1,0 +1,8 @@
+[
+{
+  "directory": "C:/cursorProject/c++/manageClass/build/src",
+  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/managerClass.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\managerClass.dir\\main.cpp.obj -c C:\\cursorProject\\c++\\manageClass\\src\\main.cpp",
+  "file": "C:/cursorProject/c++/manageClass/src/main.cpp",
+  "output": "src/CMakeFiles/managerClass.dir/main.cpp.obj"
+}
+]
