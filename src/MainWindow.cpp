@@ -33,6 +33,8 @@ MainWindow::MainWindow(int w, int h, const char *title)
     scheduleTab->end();
 
     tabs->end(); // 结束标签页容器的设置
+
+    loadData(); // 加载数据
 }
 
 /**
@@ -129,21 +131,16 @@ void MainWindow::onAddCourse(Fl_Widget *, void *v)
     // 创建时间段对象
     TimeSlot timeSlot{day, startHour, startMin, endHour, endMin};
 
-    // 创建课程对象
+    // 创建课程对象并添加到管理器
     Course newCourse(name, timeSlot, studentCount, teacher);
-
-    // 使用 CourseManager 添加课程
     if (win->courseManager->addCourse(newCourse))
     {
         // 更新表格显示
-        std::vector<std::string> rowData;
-        rowData.push_back(name);                         // 课程名称
-        rowData.push_back(timeSlot.toString());          // 时间段
-        rowData.push_back(teacher);                      // 教师
-        rowData.push_back(std::to_string(studentCount)); // 学生人数
+        win->updateCourseTable();
 
-        win->courseTable->addRow(rowData);
         win->updateCourseChoice();
+
+        win->saveData();
     }
 }
 
@@ -266,16 +263,10 @@ void MainWindow::onAddClassroom(Fl_Widget *, void *v)
     if (win->classroomManager->addClassroom(newRoom))
     {
         // 更新表格显示
-        std::vector<std::string> rowData;
-        rowData.push_back(newRoom.name);
-        char capStr[10], floorStr[10];
-        sprintf(capStr, "%d", newRoom.capacity);
-        sprintf(floorStr, "%d", newRoom.floor);
-        rowData.push_back(capStr);
-        rowData.push_back(floorStr);
-
-        win->classroomTable->addRow(rowData);
+        win->updateClassroomTable();
         win->updateRoomChoice();
+
+        win->saveData();
     }
 }
 
@@ -304,6 +295,8 @@ void MainWindow::onArrangeCourse(Fl_Widget *, void *v)
         {
             win->updateScheduleDisplay();
             fl_message("课程安排成功！");
+
+            win->saveData();
         }
     }
 }
@@ -407,4 +400,89 @@ void MainWindow::onDeleteClassroom(Fl_Widget *, void *v)
 
         fl_message("教室已删除！");
     }
+}
+
+void MainWindow::loadData()
+{
+    try
+    {
+        // 从文件加载课程数据
+        courseManager->loadFromFile("../data/courses.txt");
+        classroomManager->loadFromFile("../data/classrooms.txt");
+        schedule->loadFromFile("../data/schedule.txt", *courseManager, *classroomManager);
+
+        // 更新界面显示
+        updateCourseTable();
+        updateClassroomTable();
+        updateScheduleDisplay();
+    }
+    catch (const std::runtime_error &e)
+    {
+        fl_alert("%s", e.what());
+    }
+}
+
+void MainWindow::saveData()
+{
+    try
+    {
+        // 保存数据到文件
+        courseManager->saveToFile("../data/courses.txt");
+        classroomManager->saveToFile("../data/classrooms.txt");
+        schedule->saveToFile("../data/schedule.txt");
+    }
+    catch (const std::runtime_error &e)
+    {
+        fl_alert("%s", e.what());
+    }
+}
+
+void MainWindow::updateCourseTable()
+{
+    courseTable->clearData();
+
+    // 添加表头
+    std::vector<std::string> headers = {
+        "课程名称", "上课时间", "任课教师", "学生人数"};
+    courseTable->addRow(headers);
+
+    // 从 CourseManager 获取所有课程并显示
+    for (const auto &course : courseManager->getCourses())
+    {
+        std::vector<std::string> rowData;
+        rowData.push_back(course.name);
+        rowData.push_back(course.time.toString());
+        rowData.push_back(course.teacher);
+        rowData.push_back(std::to_string(course.studentCount));
+        courseTable->addRow(rowData);
+    }
+}
+
+void MainWindow::updateClassroomTable()
+{
+    classroomTable->clearData();
+
+    // 添加表头
+    std::vector<std::string> headers = {
+        "教室编号", "容纳人数", "楼层"};
+    classroomTable->addRow(headers);
+
+    // 从 ClassroomManager 获取所有教室并显示
+    for (const auto &room : classroomManager->getClassrooms())
+    {
+        std::vector<std::string> rowData;
+        rowData.push_back(room.name);
+        rowData.push_back(std::to_string(room.capacity));
+        rowData.push_back(std::to_string(room.floor));
+        classroomTable->addRow(rowData);
+    }
+}
+
+// 在析构函数中保存数据
+MainWindow::~MainWindow()
+{
+    saveData();
+    delete courseManager;
+    delete classroomManager;
+    delete schedule;
 }

@@ -67,6 +67,10 @@ private:
     void updateRoomChoice();      ///< 更新教室选择下拉框
     void updateScheduleDisplay(); ///< 更新课表显示
     void initScheduleTable();     ///< 初始化课表
+    void loadData();              // 加载数据
+    void saveData();              // 保存数据
+    void updateCourseTable();     // 更新课程表格显示
+    void updateClassroomTable();  // 更新教室表格显示
 
 public:
     /**
@@ -76,7 +80,7 @@ public:
      * @param title 窗口标题
      */
     MainWindow(int w, int h, const char *title);
-    ~MainWindow() {}
+    ~MainWindow();
 };
 
 #endif
