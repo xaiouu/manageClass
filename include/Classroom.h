@@ -47,12 +47,17 @@ public:
     }
 
     // 查找教室
-    const Classroom *findClassroom(const std::string &name) const
+    Classroom *findClassroom(const std::string &name) const
     {
         auto it = std::find_if(classrooms.begin(), classrooms.end(),
                                [&name](const Classroom &room)
                                { return room.name == name; });
-        return it != classrooms.end() ? &(*it) : nullptr;
+
+        if (it != classrooms.end())
+        {
+            return const_cast<Classroom *>(&(*it));
+        }
+        return nullptr;
     }
 
     void listClassrooms() const

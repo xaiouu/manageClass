@@ -12,10 +12,10 @@ set(FLTK_LIBRARY_DIR "D:/fltk-install/lib")
 
 # 手动设置 FLTK 库
 set(FLTK_LIBRARIES
-    "${FLTK_LIB_DIR}/libfltk.dll.a"
-    "${FLTK_LIB_DIR}/libfltk_forms.dll.a"
-    "${FLTK_LIB_DIR}/libfltk_images.dll.a"
-    "${FLTK_LIB_DIR}/libfltk_gl.dll.a"
+    "${FLTK_LIBRARY_DIR}/libfltk.a"
+    "${FLTK_LIBRARY_DIR}/libfltk_forms.a"
+    "${FLTK_LIBRARY_DIR}/libfltk_images.a"
+    "${FLTK_LIBRARY_DIR}/libfltk_gl.a"
 )
 
 # MinGW 需要的额外库
@@ -29,6 +29,23 @@ set(EXTRA_LIBS
     -lcomdlg32
     -loleaut32
     -lshell32
+)
+
+# 先创建可执行文件目标
+aux_source_directory(src SRC_FILES)
+
+add_executable(${PROJECT_NAME} ${SRC_FILES})
+
+# 然后设置包含目录
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${PROJECT_SOURCE_DIR}/include
+    ${FLTK_INCLUDE_DIR}
+)
+
+# 链接 FLTK 库和额外的系统库
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    ${FLTK_LIBRARIES}
+    ${EXTRA_LIBS}
 )
 
 add_subdirectory(src)

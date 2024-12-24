@@ -1,34 +1,54 @@
 #include "MainWindow.h"
+#include "Classroom.h"
+#include "Course.h"
+#include "Schedule.h"
 
+/**
+ * @brief 主窗口构造函数
+ * @details 创建主窗口的基本框架，包含三个功能标签页
+ * @param w 窗口宽度
+ * @param h 窗口高度
+ * @param title 窗口标题
+ */
 MainWindow::MainWindow(int w, int h, const char *title)
-    : Fl_Window(w, h, title)
+    : Fl_Window(w, h, title),
+      classroomManager(new ClassroomManager()),
+      courseManager(new CourseManager()),
+      schedule(new Schedule())
 {
-
+    // 创建标签页容器，设置边距为10像素
     tabs = new Fl_Tabs(10, 10, w - 20, h - 20);
 
-    // 创建标签页
+    // 创建并初始化三个功能标签页
     courseTab = new Fl_Group(10, 35, w - 20, h - 45, "课程管理");
-    setupCourseTab();
-    courseTab->end();
+    setupCourseTab(); // 设置课程管理页面的控件
+    courseTab->end(); // 结束当前组件的添加
 
     classroomTab = new Fl_Group(10, 35, w - 20, h - 45, "教室管理");
-    setupClassroomTab();
+    setupClassroomTab(); // 设置教室管理页面的控件
     classroomTab->end();
 
     scheduleTab = new Fl_Group(10, 35, w - 20, h - 45, "排课管理");
-    setupScheduleTab();
+    setupScheduleTab(); // 设置排课管理页面的控件
     scheduleTab->end();
 
-    tabs->end();
+    tabs->end(); // 结束标签页容器的设置
 }
 
+/**
+ * @brief 设置课程管理标签页
+ * @details 创建并布局课程信息输入区域和课程列表表格
+ */
 void MainWindow::setupCourseTab()
 {
-    int x = 20, y = 45;
+    int x = 20, y = 45; // 起始坐标
 
+    // === 课程信息输入区域 ===
+    // 课程名称输入框
     courseNameInput = new Fl_Input(x + 100, y, 150, 25, "课程名称:");
 
-    y += 35;
+    // 星期选择下拉框
+    y += 35; // 向下移动35像素
     dayChoice = new Fl_Choice(x + 100, y, 150, 25, "星期:");
     dayChoice->add("星期一");
     dayChoice->add("星期二");
@@ -36,65 +56,106 @@ void MainWindow::setupCourseTab()
     dayChoice->add("星期四");
     dayChoice->add("星期五");
 
+    // 开始时间选择器
     y += 35;
     startTimeHour = new Fl_Spinner(x + 100, y, 70, 25, "开始时间:");
-    startTimeHour->range(8, 20);
+    startTimeHour->range(8, 20); // 设置小时范围：8:00-20:00
     startTimeMin = new Fl_Spinner(x + 180, y, 70, 25);
-    startTimeMin->range(0, 59);
+    startTimeMin->range(0, 59); // 设置分钟范围：0-59
 
+    // 添加结束时间选择器
+    y += 35;
+    endTimeHour = new Fl_Spinner(x + 100, y, 70, 25, "结束时间:");
+    endTimeHour->range(8, 20);
+    endTimeMin = new Fl_Spinner(x + 180, y, 70, 25);
+    endTimeMin->range(0, 59);
+
+    // 添加学生人数输入
+    y += 35;
+    studentCountInput = new Fl_Spinner(x + 100, y, 150, 25, "学生人数:");
+    studentCountInput->range(1, 200); // 设置范围1-200人
+
+    // 教师姓名输入框
     y += 35;
     teacherInput = new Fl_Input(x + 100, y, 150, 25, "教师:");
 
+    // === 操作按钮区域 ===
     y += 45;
+    // 添加课程按钮
     Fl_Button *addBtn = new Fl_Button(x, y, 70, 25, "添加");
-    addBtn->callback(onAddCourse, this);
+    addBtn->callback(onAddCourse, this); // 设置点击回调函数
 
+    // 删除课程按钮
     Fl_Button *deleteBtn = new Fl_Button(x + 80, y, 70, 25, "删除");
     deleteBtn->callback(onDeleteCourse, this);
 
-    // 添加课程表格
+    // === 课程列表表格 ===
     courseTable = new CourseTable(x, y + 35, w() - 50, h() - 200);
-    courseTable->col_header(1);
-    courseTable->row_header(1);
-    courseTable->cols(5);
-    courseTable->col_width_all(120);
-    courseTable->row_height_all(25);
+    courseTable->col_header(1);      // 显示列表头
+    courseTable->row_header(1);      // 显示行表头
+    courseTable->cols(4);            // 设置4列：课程名称、时间段、教师、学生人数
+    courseTable->col_width_all(120); // 设置列宽
+    courseTable->row_height_all(25); // 设置行高
+
+    // 添加表格列标题
+    std::vector<std::string> headers = {
+        "课程名称",
+        "上课时间",
+        "任课教师",
+        "学生人数"};
+    courseTable->addRow(headers);
 }
 
+/**
+ * @brief 添加课程按钮的回调函数
+ * @param w 触发回调的控件指针（未使用）
+ * @param v MainWindow对象指针
+ * @details 验证并收集输入数据，添加到课程表格中
+ */
 void MainWindow::onAddCourse(Fl_Widget *, void *v)
 {
     MainWindow *win = (MainWindow *)v;
 
     // 获取输入数据
     const char *name = win->courseNameInput->value();
-    const char *day = win->dayChoice->text();
-    int hour = win->startTimeHour->value();
-    int min = win->startTimeMin->value();
     const char *teacher = win->teacherInput->value();
+    int startHour = win->startTimeHour->value();
+    int startMin = win->startTimeMin->value();
+    int endHour = win->endTimeHour->value();
+    int endMin = win->endTimeMin->value();
+    int studentCount = win->studentCountInput->value();
+    std::string day = win->dayChoice->text();
 
-    if (strlen(name) == 0)
+    // 创建时间段对象
+    TimeSlot timeSlot{day, startHour, startMin, endHour, endMin};
+
+    // 创建课程对象
+    Course newCourse(name, timeSlot, studentCount, teacher);
+
+    // 使用 CourseManager 添加课程
+    if (win->courseManager->addCourse(newCourse))
     {
-        fl_alert("请输入课程名称！");
-        return;
+        // 更新表格显示
+        std::vector<std::string> rowData;
+        rowData.push_back(name);                         // 课程名称
+        rowData.push_back(timeSlot.toString());          // 时间段
+        rowData.push_back(teacher);                      // 教师
+        rowData.push_back(std::to_string(studentCount)); // 学生人数
+
+        win->courseTable->addRow(rowData);
+        win->updateCourseChoice();
     }
-
-    // 添加到表格
-    std::vector<std::string> rowData;
-    rowData.push_back(name);
-    rowData.push_back(day);
-    char time[10];
-    sprintf(time, "%02d:%02d", hour, min);
-    rowData.push_back(time);
-    rowData.push_back(teacher);
-
-    win->courseTable->addRow(rowData);
 }
 
+/**
+ * @brief 设置教室管理标签页
+ * @details 创建并布局教室信息输入区域和教室列表表格
+ */
 void MainWindow::setupClassroomTab()
 {
     int x = 20, y = 45;
 
-    // 教室信息输入
+    // 教室信息输入区域
     Fl_Input *roomNumInput = new Fl_Input(x + 100, y, 150, 25, "教室编号:");
 
     y += 35;
@@ -102,12 +163,10 @@ void MainWindow::setupClassroomTab()
     capacityInput->range(1, 200);
 
     y += 35;
-    Fl_Choice *typeChoice = new Fl_Choice(x + 100, y, 150, 25, "教室类型:");
-    typeChoice->add("普通教室");
-    typeChoice->add("多媒体教室");
-    typeChoice->add("实验室");
-    typeChoice->value(0);
+    Fl_Spinner *floorInput = new Fl_Spinner(x + 100, y, 150, 25, "楼层:");
+    floorInput->range(1, 20);
 
+    // 操作按钮
     y += 45;
     Fl_Button *addRoomBtn = new Fl_Button(x, y, 70, 25, "添加");
     addRoomBtn->callback(onAddClassroom, this);
@@ -119,47 +178,54 @@ void MainWindow::setupClassroomTab()
     classroomTable = new CourseTable(x, y + 35, w() - 50, h() - 200);
     classroomTable->col_header(1);
     classroomTable->row_header(1);
-    classroomTable->cols(3);
+    classroomTable->cols(3); // 教室编号、容量、类型
     classroomTable->col_width_all(120);
     classroomTable->row_height_all(25);
 }
 
+/**
+ * @brief 设置排课管理标签页
+ * @details 创建并布局排课信息选择区域和课表显示
+ */
 void MainWindow::setupScheduleTab()
 {
     int x = 20, y = 45;
 
-    // 排课信息选择
+    // 课程选择
     courseChoice = new Fl_Choice(x + 100, y, 150, 25, "选择课程:");
-    updateCourseChoice(); // 更新课程列表
+    updateCourseChoice();
 
     y += 35;
     roomChoice = new Fl_Choice(x + 100, y, 150, 25, "选择教室:");
-    updateRoomChoice(); // 更新教室列表
+    updateRoomChoice();
 
-    y += 35;
-    Fl_Choice *weekChoice = new Fl_Choice(x + 100, y, 150, 25, "选择周次:");
-    for (int i = 1; i <= 20; i++)
-    {
-        char buf[20];
-        sprintf(buf, "第%d周", i);
-        weekChoice->add(buf);
-    }
-
+    // 安排课程按钮
     y += 45;
     Fl_Button *arrangeBtn = new Fl_Button(x, y, 90, 25, "安排课程");
     arrangeBtn->callback(onArrangeCourse, this);
 
-    // 课表显示
+    // 课程安排表格
     scheduleTable = new CourseTable(x, y + 35, w() - 50, h() - 200);
     scheduleTable->col_header(1);
     scheduleTable->row_header(1);
-    scheduleTable->cols(6);  // 周一到周五，加上时间列
-    scheduleTable->rows(13); // 12节课 + 表头
+    scheduleTable->cols(5); // 课程名称、上课时间、学生人数、任课教师、教室
     scheduleTable->col_width_all(120);
     scheduleTable->row_height_all(25);
-    initScheduleTable();
+
+    // 添加表头
+    std::vector<std::string> headers = {
+        "课程名称",
+        "上课时间",
+        "学生人数",
+        "任课教师",
+        "教室"};
+    scheduleTable->addRow(headers);
 }
 
+/**
+ * @brief 初始化课表显示
+ * @details 设置课表的表头和时间列
+ */
 void MainWindow::initScheduleTable()
 {
     if (!scheduleTable)
@@ -179,50 +245,67 @@ void MainWindow::initScheduleTable()
     }
 }
 
+/**
+ * @brief 添加教室的回调函数
+ * @param w 触发回调的控件指针（未使用）
+ * @param v MainWindow对象指针
+ */
 void MainWindow::onAddClassroom(Fl_Widget *, void *v)
 {
     MainWindow *win = (MainWindow *)v;
     Fl_Input *roomNum = (Fl_Input *)win->classroomTab->child(0);
     Fl_Spinner *capacity = (Fl_Spinner *)win->classroomTab->child(1);
-    Fl_Choice *type = (Fl_Choice *)win->classroomTab->child(2);
+    Fl_Spinner *floor = (Fl_Spinner *)win->classroomTab->child(2);
 
-    if (strlen(roomNum->value()) == 0)
+    // 使用 ClassroomManager 添加教室
+    Classroom newRoom(
+        roomNum->value(),
+        (int)capacity->value(),
+        (int)floor->value());
+
+    if (win->classroomManager->addClassroom(newRoom))
     {
-        fl_alert("请输入教室编号！");
-        return;
+        // 更新表格显示
+        std::vector<std::string> rowData;
+        rowData.push_back(newRoom.name);
+        char capStr[10], floorStr[10];
+        sprintf(capStr, "%d", newRoom.capacity);
+        sprintf(floorStr, "%d", newRoom.floor);
+        rowData.push_back(capStr);
+        rowData.push_back(floorStr);
+
+        win->classroomTable->addRow(rowData);
+        win->updateRoomChoice();
     }
-
-    std::vector<std::string> rowData;
-    rowData.push_back(roomNum->value());
-    char capStr[10];
-    sprintf(capStr, "%d", (int)capacity->value());
-    rowData.push_back(capStr);
-    rowData.push_back(type->text());
-
-    win->classroomTable->addRow(rowData);
-    win->updateRoomChoice(); // 更新教室选择列表
 }
 
 void MainWindow::onArrangeCourse(Fl_Widget *, void *v)
 {
     MainWindow *win = (MainWindow *)v;
 
-    if (win->courseChoice->value() < 0)
+    if (win->courseChoice->value() < 0 || win->roomChoice->value() < 0)
     {
-        fl_alert("请选择课程！");
-        return;
-    }
-    if (win->roomChoice->value() < 0)
-    {
-        fl_alert("请选择教室！");
+        fl_alert("请选择课程和教室！");
         return;
     }
 
-    // 这里添加排课逻辑
-    // 可以检查时间冲突等
+    // 获取选中的课程和教室
+    const char *courseName = win->courseChoice->text();
+    const char *roomName = win->roomChoice->text();
 
-    fl_message("课程安排成功！");
-    win->updateScheduleDisplay();
+    // 从管理器中获取课程和教室对象
+    Course *course = win->courseManager->findCourse(courseName);
+    Classroom *classroom = win->classroomManager->findClassroom(roomName);
+
+    if (course && classroom)
+    {
+        // 使用 Schedule 类进行排课
+        if (win->schedule->addEntry(*course, *classroom))
+        {
+            win->updateScheduleDisplay();
+            fl_message("课程安排成功！");
+        }
+    }
 }
 
 void MainWindow::updateCourseChoice()
@@ -257,27 +340,29 @@ void MainWindow::updateRoomChoice()
 
 void MainWindow::updateScheduleDisplay()
 {
-    // 清空现有课表内容（保留表头和时间列）
-    for (int row = 1; row < scheduleTable->rows(); row++)
+    // 清空现有课表
+    scheduleTable->clearData();
+
+    // 添加表头
+    std::vector<std::string> headers = {
+        "课程名称",
+        "上课时间",
+        "学生人数",
+        "任课教师",
+        "教室"};
+    scheduleTable->addRow(headers);
+
+    // 显示所有已安排的课程
+    for (const auto &entry : schedule->getEntries())
     {
-        for (int col = 1; col < scheduleTable->cols(); col++)
-        {
-            scheduleTable->set_cell_value(row, col, "");
-        }
+        std::vector<std::string> rowData;
+        rowData.push_back(entry.course.name);
+        rowData.push_back(entry.course.time.toString());
+        rowData.push_back(std::to_string(entry.course.studentCount));
+        rowData.push_back(entry.course.teacher);
+        rowData.push_back(entry.classroom.name);
+        scheduleTable->addRow(rowData);
     }
-
-    // 获取选中的课程和教室
-    const char *courseName = courseChoice->text();
-    const char *roomNum = roomChoice->text();
-    if (!courseName || !roomNum)
-        return;
-
-    // 在对应时间段显示课程信息
-    int row = courseChoice->value() + 1; // 假设课程顺序对应时间段
-    int col = dayChoice->value() + 1;    // 星期几对应的列
-
-    std::string cellContent = std::string(courseName) + "\n" + roomNum;
-    scheduleTable->set_cell_value(row, col, cellContent.c_str());
 }
 
 void MainWindow::onDeleteCourse(Fl_Widget *, void *v)

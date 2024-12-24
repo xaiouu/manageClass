@@ -31,20 +31,20 @@ public:
     bool isCourseConflict(const Course &newCourse) const
     {
         return any_of(courses.begin(), courses.end(),
-                           [&newCourse](const Course &course)
-                           {
-                               // 检查课程名、时间和教师是否同时重复
-                               bool timeConflict = course.time.overlaps(newCourse.time);
-                               bool sameTeacher = course.teacher == newCourse.teacher;
-                               bool sameName = course.name == newCourse.name;
+                      [&newCourse](const Course &course)
+                      {
+                          // 检查课程名、时间和教师是否同时重复
+                          bool timeConflict = course.time.overlaps(newCourse.time);
+                          bool sameTeacher = course.teacher == newCourse.teacher;
+                          bool sameName = course.name == newCourse.name;
 
-                               // 如果同一时间段的课程由同一个教师教授，认为是冲突
-                               if (timeConflict && sameTeacher)
-                               {
-                                   return true;
-                               }
-                               return false;
-                           });
+                          // 如果同一时间段的课程由同一个教师教授，认为是冲突
+                          if (timeConflict && sameTeacher)
+                          {
+                              return true;
+                          }
+                          return false;
+                      });
     }
 
     // 修改添加课程的方法
@@ -164,5 +164,15 @@ public:
     const std::vector<Course> &getCourses() const
     {
         return courses;
+    }
+
+    // 查找课程
+    Course *findCourse(const std::string &name)
+    {
+        auto it = std::find_if(courses.begin(), courses.end(),
+                               [&name](const Course &course)
+                               { return course.name == name; });
+
+        return it != courses.end() ? &(*it) : nullptr;
     }
 };

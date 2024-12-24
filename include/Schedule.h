@@ -183,4 +183,10 @@ public:
                  << entry.classroom.name << "\n";
         }
     }
+
+    // 获取所有课程安排
+    const std::vector<ScheduleEntry> &getEntries() const
+    {
+        return entries;
+    }
 };
