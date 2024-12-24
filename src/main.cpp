@@ -56,7 +56,7 @@ int main()
 
         // 添加新的数据
         TimeSlot newTime{"周五", 13, 0, 15, 0};
-        courseManager.addCourse(Course("生物", newTime, 25, "赵老师"));
+        courseManager.addCourse(Course("生物医药", newTime, 25, "赵老师"));
         classroomManager.addClassroom(Classroom("E102", 35, 2));
         schedule.addEntry(Course("生物", newTime, 25, "赵老师"), Classroom("E102", 35, 2));
 

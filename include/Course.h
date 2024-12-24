@@ -52,8 +52,7 @@ public:
     {
         if (isCourseConflict(course))
         {
-            std::cout << "课程 \"" << course.name << "\" 存在冲突，无法添加。\n";
-            std::cout << "该教师在此时间段已有其他课程。\n";
+            std::cout << "课程 \"" << course.name << "\" 存在冲突，无法添加。该教师在此时间段已有其他课程。\n";
             return false;
         }
         courses.push_back(course);
