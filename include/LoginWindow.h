@@ -8,6 +8,7 @@
 #include <FL/Fl_Button.H>
 #include <FL/fl_ask.H>
 #include "MainWindow.h"
+#include "Admin.h"
 
 /**
  * @brief 登录窗口类
@@ -17,23 +18,26 @@
 class LoginWindow : public Fl_Window
 {
 private:
-    Fl_Input *username;        // 用户名输入框
-    Fl_Secret_Input *password; // 密码输入框（显示为星号）
-    Fl_Button *loginBtn;       // 登录按钮
+    Admin admin;
+    Fl_Input *username;               // 用户名输入框
+    Fl_Secret_Input *password;        // 密码输入框（显示为星号）
+    Fl_Secret_Input *confirmPassword; // 用于注册时确认密码
+    Fl_Button *loginBtn;              // 登录按钮
+    Fl_Button *registerBtn;
+    Fl_Button *changePassBtn;
+    bool isRegistering; // 标记当前是否处于注册模式
 
     /**
      * @brief 登录按钮的回调函数
      * @param v 通常是LoginWindow对象指针
      */
     static void onLogin(Fl_Widget *, void *v);
+    static void onRegister(Fl_Widget *, void *v);
+    static void onChangePass(Fl_Widget *, void *v);
+    static void onSwitchMode(Fl_Widget *, void *v);
 
-    /**
-     * @brief 验证用户名和密码
-     * @param user 用户名
-     * @param pass 密码
-     * @return 验证是否通过
-     */
-    bool checkCredentials(const char *user, const char *pass);
+    void switchToRegisterMode();
+    void switchToLoginMode();
 
 public:
     /**

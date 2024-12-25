@@ -7,7 +7,7 @@
 int main(int argc, char *argv[])
 {
     // 创建登录窗口
-    LoginWindow *login = new LoginWindow(400, 250, "课程管理系统 - 登录");
+    LoginWindow *login = new LoginWindow(400, 300, "课程管理系统 - 登录");
 
     // 窗口居中显示
     int screen_w = Fl::w(); // 获取屏幕宽度
