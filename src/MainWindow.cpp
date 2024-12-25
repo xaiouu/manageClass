@@ -34,7 +34,10 @@ MainWindow::MainWindow(int w, int h, const char *title)
 
     tabs->end(); // 结束标签页容器的设置
 
-    loadData(); // 加载数据
+    // 加载数据并更新界面
+    loadData();
+    updateCourseChoice();
+    updateRoomChoice();
 }
 
 /**
@@ -101,7 +104,7 @@ void MainWindow::setupCourseTab()
     courseTable->cols(4);            // 设置4列：课程名称、时间段、教师、学生人数
     courseTable->col_width_all(120); // 设置列宽
     courseTable->row_height_all(25); // 设置行高
-    
+
     // 设置表格为可调整大小的组件
     courseTab->resizable(courseTable);
 
@@ -208,7 +211,7 @@ void MainWindow::setupScheduleTab()
     suggestBtn->callback(onSuggestClassroom, this);
 
     y += 35;
-    Fl_Button *arrangeBtn = new Fl_Button(x, y, 90, 25, "安排课程");
+    Fl_Button *arrangeBtn = new Fl_Button(x, y, 120, 25, "安排授课教室");
     arrangeBtn->callback(onArrangeCourse, this);
 
     // 课程安排表格
@@ -314,30 +317,26 @@ void MainWindow::onArrangeCourse(Fl_Widget *, void *v)
 void MainWindow::updateCourseChoice()
 {
     courseChoice->clear();
+    courseChoice->add("请选择课程"); // 添加默认选项
+    courseChoice->value(0);          // 设置默认选中项
 
-    // 获取课程表格中的所有课程
-    for (int i = 0; i < courseTable->rows() - 1; i++)
+    // 获取所有课程并添加到选择框
+    for (const auto &course : courseManager->getCourses())
     {
-        std::string courseName = courseTable->get_cell_value(i + 1, 0);
-        if (!courseName.empty())
-        {
-            courseChoice->add(courseName.c_str());
-        }
+        courseChoice->add(course.name.c_str());
     }
 }
 
 void MainWindow::updateRoomChoice()
 {
     roomChoice->clear();
+    roomChoice->add("请选择教室"); // 添加默认选项
+    roomChoice->value(0);          // 设置默认选中项
 
-    // 获取教室表格中的所有教室
-    for (int i = 0; i < classroomTable->rows() - 1; i++)
+    // 获取所有教室并添加到选择框
+    for (const auto &room : classroomManager->getClassrooms())
     {
-        std::string roomNum = classroomTable->get_cell_value(i + 1, 0);
-        if (!roomNum.empty())
-        {
-            roomChoice->add(roomNum.c_str());
-        }
+        roomChoice->add(room.name.c_str());
     }
 }
 
@@ -383,7 +382,7 @@ void MainWindow::onDeleteCourse(Fl_Widget *, void *v)
         // 从表格中删除该行
         win->courseTable->clearData();
 
-        // ���新课程选择列表
+        // 新课程选择列表
         win->updateCourseChoice();
 
         fl_message("课程已删除！");
