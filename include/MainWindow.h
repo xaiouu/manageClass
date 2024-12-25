@@ -10,6 +10,7 @@
 #include <FL/Fl_Spinner.H>
 #include <FL/Fl_Button.H>
 #include <FL/fl_ask.H>
+#include <FL/Fl_Box.H>
 #include "CourseTable.h"
 #include "Classroom.h"
 #include "Course.h"
@@ -59,6 +60,10 @@ private:
     static void onDeleteClassroom(Fl_Widget *, void *v); ///< 删除教室按钮回调
     static void onArrangeCourse(Fl_Widget *, void *v);   ///< 安排课程按钮回调
     static void onSuggestClassroom(Fl_Widget *, void *); //< 建议按钮回调函数声明
+    static void onManualArrange(Fl_Widget *, void *v);   // 手动排课回调
+    static void onSuggestFromChoice(Fl_Widget *, void *v);
+    static void onSuggestFromInput(Fl_Widget *, void *v);
+    static void showSuggestions(const std::vector<const Classroom *> &rooms);
 
     // === 辅助函数 ===
     void setupCourseTab();        ///< 初始化课程管理标签页
@@ -72,6 +77,9 @@ private:
     void saveData();              // 保存数据
     void updateCourseTable();     // 更新课程表格显示
     void updateClassroomTable();  // 更新教室表格显示
+
+    Fl_Input *manualCourseInput;    // 手动输入课程名
+    Fl_Input *manualClassroomInput; // 手动输入教室号
 
 public:
     /**

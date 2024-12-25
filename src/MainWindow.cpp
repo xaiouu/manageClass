@@ -197,7 +197,7 @@ void MainWindow::setupScheduleTab()
 {
     int x = 20, y = 45;
 
-    // 课程选择
+    // 下拉选择区域
     courseChoice = new Fl_Choice(x + 100, y, 150, 25, "选择课程:");
     updateCourseChoice();
 
@@ -205,31 +205,33 @@ void MainWindow::setupScheduleTab()
     roomChoice = new Fl_Choice(x + 100, y, 150, 25, "选择教室:");
     updateRoomChoice();
 
-    // 安排课程按钮
-    y += 45;
-    Fl_Button *suggestBtn = new Fl_Button(x, y, 120, 25, "自动建议教室");
-    suggestBtn->callback(onSuggestClassroom, this);
+    // 下拉选择的按钮组
+    Fl_Button *suggestBtn = new Fl_Button(x + 260, y - 35, 70, 25, "建议");
+    suggestBtn->callback(onSuggestFromChoice, this);
 
-    y += 35;
-    Fl_Button *arrangeBtn = new Fl_Button(x, y, 120, 25, "安排授课教室");
+    Fl_Button *arrangeBtn = new Fl_Button(x + 260, y, 70, 25, "排课");
     arrangeBtn->callback(onArrangeCourse, this);
 
-    // 课程安排表格
-    scheduleTable = new CourseTable(x, y + 35, w() - 50, h() - 200);
-    scheduleTable->col_header(1);
-    scheduleTable->row_header(1);
-    scheduleTable->cols(5); // 课程名称、上课时间、学生人数、任课教师、教室
+    // 手动输入区域
+    y += 45;
+    manualCourseInput = new Fl_Input(x + 100, y, 150, 25, "课程名称:");
+    Fl_Button *suggestBtn1 = new Fl_Button(x + 260, y, 70, 25, "建议");
+    suggestBtn1->callback(onSuggestFromInput, this);
+
+    y += 35;
+    manualClassroomInput = new Fl_Input(x + 100, y, 150, 25, "教室编号:");
+
+    // 手动排课按钮
+    Fl_Button *manualBtn = new Fl_Button(x + 260, y, 70, 25, "排课");
+    manualBtn->callback(onManualArrange, this);
+
+    // 课表显示
+    y += 45;
+    scheduleTable = new CourseTable(x, y, w() - 50, h() - y - 30);
+    scheduleTable->cols(6);
     scheduleTable->col_width_all(120);
     scheduleTable->row_height_all(25);
-
-    // 添加表头
-    std::vector<std::string> headers = {
-        "课程名称",
-        "上课时间",
-        "学生人数",
-        "任课教师",
-        "教室"};
-    scheduleTable->addRow(headers);
+    updateScheduleDisplay();
 }
 
 /**
@@ -487,8 +489,8 @@ void MainWindow::updateClassroomTable()
     }
 }
 
-// 添加建议按钮的回调函数
-void MainWindow::onSuggestClassroom(Fl_Widget *, void *v)
+// 下拉框的建议回调
+void MainWindow::onSuggestFromChoice(Fl_Widget *, void *v)
 {
     MainWindow *win = (MainWindow *)v;
 
@@ -498,48 +500,70 @@ void MainWindow::onSuggestClassroom(Fl_Widget *, void *v)
         return;
     }
 
-    // 获取选中的课程
-    const char *courseName = win->courseChoice->text();
-    Course *course = win->courseManager->findCourse(courseName);
-
+    Course *course = win->courseManager->findCourse(win->courseChoice->text());
     if (!course)
     {
         fl_alert("未找到选中的课程！");
         return;
     }
 
-    // 获取建议的教室列表
     auto suggestedRooms = win->schedule->suggestClassrooms(*course, *win->classroomManager);
+    showSuggestions(suggestedRooms);
+}
 
-    if (!suggestedRooms.empty())
+// 手动输入的建议回调
+void MainWindow::onSuggestFromInput(Fl_Widget *, void *v)
+{
+    MainWindow *win = (MainWindow *)v;
+
+    const char *courseName = win->manualCourseInput->value();
+    if (strlen(courseName) == 0)
     {
-        // 构建建议信息
+        fl_alert("请输入课程名称！");
+        return;
+    }
+
+    Course *course = win->courseManager->findCourse(courseName);
+    if (!course)
+    {
+        fl_alert("未找到该课程！");
+        return;
+    }
+
+    auto suggestedRooms = win->schedule->suggestClassrooms(*course, *win->classroomManager);
+    showSuggestions(suggestedRooms);
+}
+
+// 显示建议结果的辅助函数
+void MainWindow::showSuggestions(const std::vector<const Classroom *> &rooms)
+{
+    if (!rooms.empty())
+    {
         std::string message = "建议教室列表：\n\n";
-        int i = 1;
-        for (const auto *room : suggestedRooms)
+        for (size_t i = 0; i < rooms.size(); i++)
         {
-            message += std::to_string(i) + ". " + room->name +
-                       "\n   容量：" + std::to_string(room->capacity) + "人" +
-                       "\n   楼层：" + std::to_string(room->floor) + "\n\n";
-            i++;
+            message += std::to_string(i + 1) + ". " + rooms[i]->name +
+                       "\n   容量：" + std::to_string(rooms[i]->capacity) + "人" +
+                       "\n   楼层：" + std::to_string(rooms[i]->floor) + "\n\n";
         }
-
-        // 显示建议列表
         fl_message("%s", message.c_str());
-
-        // 自动选中第一个建议的教室
-        for (int i = 0; i < win->roomChoice->size(); i++)
-        {
-            if (win->roomChoice->text(i) == suggestedRooms[0]->name)
-            {
-                win->roomChoice->value(i);
-                break;
-            }
-        }
     }
     else
     {
-        fl_alert("没有找到合适的教室！\n可能原因:\n1. 所有教室容量不足\n2. 该时间段教室都已被占用");
+        fl_alert("没有找到合适的教室！");
+    }
+}
+
+void MainWindow::onManualArrange(Fl_Widget *, void *v)
+{
+    MainWindow *win = (MainWindow *)v;
+    Course *course = win->courseManager->findCourse(win->manualCourseInput->value());
+    Classroom *classroom = win->classroomManager->findClassroom(win->manualClassroomInput->value());
+
+    if (course && classroom && win->schedule->addEntry(*course, *classroom))
+    {
+        win->updateScheduleDisplay();
+        win->saveData();
     }
 }
 
