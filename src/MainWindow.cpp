@@ -198,6 +198,10 @@ void MainWindow::setupScheduleTab()
 
     // 安排课程按钮
     y += 45;
+    Fl_Button *suggestBtn = new Fl_Button(x, y, 120, 25, "自动建议教室");
+    suggestBtn->callback(onSuggestClassroom, this);
+
+    y += 35;
     Fl_Button *arrangeBtn = new Fl_Button(x, y, 90, 25, "安排课程");
     arrangeBtn->callback(onArrangeCourse, this);
 
@@ -475,6 +479,52 @@ void MainWindow::updateClassroomTable()
         rowData.push_back(std::to_string(room.capacity));
         rowData.push_back(std::to_string(room.floor));
         classroomTable->addRow(rowData);
+    }
+}
+
+// 添加建议按钮的回调函数
+void MainWindow::onSuggestClassroom(Fl_Widget *, void *v)
+{
+    MainWindow *win = (MainWindow *)v;
+
+    if (win->courseChoice->value() < 0)
+    {
+        fl_alert("请先选择课程！");
+        return;
+    }
+
+    // 获取选中的课程
+    const char *courseName = win->courseChoice->text();
+    Course *course = win->courseManager->findCourse(courseName);
+
+    if (!course)
+    {
+        fl_alert("未找到选中的课程！");
+        return;
+    }
+
+    // 获取建议的教室
+    const Classroom *suggestedRoom = win->schedule->suggestClassroom(*course, *win->classroomManager);
+
+    if (suggestedRoom)
+    {
+        // 找到建议的教室，自动选中
+        for (int i = 0; i < win->roomChoice->size(); i++)
+        {
+            if (win->roomChoice->text(i) == suggestedRoom->name)
+            {
+                win->roomChoice->value(i);
+                fl_message("建议使用教室：%s\n容量:%d人\n楼层:%d",
+                           suggestedRoom->name.c_str(),
+                           suggestedRoom->capacity,
+                           suggestedRoom->floor);
+                break;
+            }
+        }
+    }
+    else
+    {
+        fl_alert("没有找到合适的教室！\n可能原因:\n1. 所有教室容量不足\n2. 该时间段教室都已被占用");
     }
 }
 

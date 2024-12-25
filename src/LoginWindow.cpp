@@ -37,7 +37,7 @@ void LoginWindow::onLogin(Fl_Widget *, void *v)
     if (win->checkCredentials(user, pass))
     {
         // 登录成功：创建并显示主窗口
-        MainWindow *mainWin = new MainWindow(800, 600, "课程管理系统");
+        MainWindow *mainWin = new MainWindow(1000, 800, "课程管理系统");
         mainWin->show();
         win->hide(); // 隐藏登录窗口
     }

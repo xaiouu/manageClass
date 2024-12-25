@@ -189,4 +189,40 @@ public:
     {
         return entries;
     }
+
+    // 修改为返回建议的教室指针
+    const Classroom *suggestClassroom(const Course &course, const ClassroomManager &classroomManager) const
+    {
+        const Classroom *bestRoom = nullptr;
+        int minCapacityDiff = std::numeric_limits<int>::max();
+
+        for (const auto &room : classroomManager.getClassrooms())
+        {
+            // 检查教室容量和时间冲突
+            if (room.capacity >= course.studentCount)
+            {
+                bool hasConflict = false;
+                for (const auto &entry : entries)
+                {
+                    if (entry.classroom.name == room.name &&
+                        entry.course.time.overlaps(course.time))
+                    {
+                        hasConflict = true;
+                        break;
+                    }
+                }
+
+                if (!hasConflict)
+                {
+                    int capacityDiff = room.capacity - course.studentCount;
+                    if (capacityDiff < minCapacityDiff)
+                    {
+                        bestRoom = &room;
+                        minCapacityDiff = capacityDiff;
+                    }
+                }
+            }
+        }
+        return bestRoom;
+    }
 };

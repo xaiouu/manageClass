@@ -40,15 +40,15 @@ private:
     Fl_Choice *dayChoice;          ///< 星期选择下拉框
     Fl_Spinner *startTimeHour;     ///< 开始时间（小时）选择器
     Fl_Spinner *startTimeMin;      ///< 开始时间（分钟）选择器
-    Fl_Spinner *endTimeHour;       // 新增结束时间
-    Fl_Spinner *endTimeMin;        // 新增结束时间
-    Fl_Spinner *studentCountInput; // 新增
+    Fl_Spinner *endTimeHour;       ///< 结束时间
+    Fl_Spinner *endTimeMin;        ///< 结束时间
+    Fl_Spinner *studentCountInput; ///< 学生人数
     Fl_Input *teacherInput;        ///< 教师姓名输入框
     CourseTable *courseTable;      ///< 课程列表表格
 
     // === 教室和排课控件 ===
     CourseTable *classroomTable; ///< 教室列表表格
-    CourseTable *scheduleTable;  ///< 课表显示表格
+    CourseTable *scheduleTable;  ///< 排课显示表格
     Fl_Choice *courseChoice;     ///< 课程选择下拉框
     Fl_Choice *roomChoice;       ///< 教室选择下拉框
 
@@ -58,6 +58,7 @@ private:
     static void onAddClassroom(Fl_Widget *, void *v);    ///< 添加教室按钮回调
     static void onDeleteClassroom(Fl_Widget *, void *v); ///< 删除教室按钮回调
     static void onArrangeCourse(Fl_Widget *, void *v);   ///< 安排课程按钮回调
+    static void onSuggestClassroom(Fl_Widget *, void *); //< 建议按钮回调函数声明
 
     // === 辅助函数 ===
     void setupCourseTab();        ///< 初始化课程管理标签页
