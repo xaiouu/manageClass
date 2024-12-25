@@ -112,4 +112,24 @@ public:
     {
         return classrooms;
     }
+
+    // 删除教室
+    bool removeClassroom(const std::string &roomName)
+    {
+        auto it = std::find_if(classrooms.begin(), classrooms.end(),
+                               [&roomName](const Classroom &room)
+                               {
+                                   return room.name == roomName;
+                               });
+
+        if (it != classrooms.end())
+        {
+            classrooms.erase(it);
+            std::cout << "教室 \"" << roomName << "\" 删除成功。\n";
+            return true;
+        }
+
+        std::cout << "教室 \"" << roomName << "\" 不存在，无法删除。\n";
+        return false;
+    }
 };

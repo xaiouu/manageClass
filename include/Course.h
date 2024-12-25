@@ -175,4 +175,32 @@ public:
 
         return it != courses.end() ? &(*it) : nullptr;
     }
+
+    // 修改删除课程方法，增加教师参数
+    bool removeCourse(const std::string &courseName, const std::string &teacher)
+    {
+        // 打印调试信息
+        std::cout << "尝试删除课程: " << courseName << ", 教师: " << teacher << std::endl;
+        std::cout << "当前课程列表:" << std::endl;
+        for (const auto &course : courses)
+        {
+            std::cout << "课程名: " << course.name << ", 教师: " << course.teacher << std::endl;
+        }
+
+        auto it = std::find_if(courses.begin(), courses.end(),
+                               [&](const Course &course)
+                               {
+                                   return course.name == courseName && course.teacher == teacher;
+                               });
+
+        if (it != courses.end())
+        {
+            courses.erase(it);
+            std::cout << "课程 \"" << courseName << "\"（教师：" << teacher << "）删除成功。\n";
+            return true;
+        }
+
+        std::cout << "未找到课程 \"" << courseName << "\"（教师：" << teacher << "）。\n";
+        return false;
+    }
 };

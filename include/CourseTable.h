@@ -33,6 +33,12 @@ protected:
      * @param W,H 单元格大小
      */
     void draw_cell(TableContext context, int R, int C, int X, int Y, int W, int H);
+    enum ResizeFlag
+    {
+        RESIZE_NONE,
+        RESIZE_COL,
+        RESIZE_ROW
+    };
 
 public:
     /**

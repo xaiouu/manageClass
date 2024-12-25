@@ -59,11 +59,12 @@ private:
     static void onAddClassroom(Fl_Widget *, void *v);    ///< 添加教室按钮回调
     static void onDeleteClassroom(Fl_Widget *, void *v); ///< 删除教室按钮回调
     static void onArrangeCourse(Fl_Widget *, void *v);   ///< 安排课程按钮回调
-    static void onSuggestClassroom(Fl_Widget *, void *); //< 建议按钮回调函数声明
-    static void onManualArrange(Fl_Widget *, void *v);   // 手动排课回调
+    // static void onSuggestClassroom(Fl_Widget *, void *); //< 建议按钮回调函数声明
+    static void onManualArrange(Fl_Widget *, void *v); // 手动排课回调
     static void onSuggestFromChoice(Fl_Widget *, void *v);
     static void onSuggestFromInput(Fl_Widget *, void *v);
     static void showSuggestions(const std::vector<const Classroom *> &rooms);
+    static void onDeleteSchedule(Fl_Widget *, void *v);
 
     // === 辅助函数 ===
     void setupCourseTab();        ///< 初始化课程管理标签页
@@ -72,7 +73,6 @@ private:
     void updateCourseChoice();    ///< 更新课程选择下拉框
     void updateRoomChoice();      ///< 更新教室选择下拉框
     void updateScheduleDisplay(); ///< 更新课表显示
-    void initScheduleTable();     ///< 初始化课表
     void loadData();              // 加载数据
     void saveData();              // 保存数据
     void updateCourseTable();     // 更新课程表格显示

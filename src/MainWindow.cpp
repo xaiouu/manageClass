@@ -154,7 +154,7 @@ void MainWindow::onAddCourse(Fl_Widget *, void *v)
 }
 
 /**
- * @brief 设置教室管理标签页
+ * @brief 设置教室管理标签���
  * @details 创建并布局教室信息输入区域和教室列表表格
  */
 void MainWindow::setupClassroomTab()
@@ -224,6 +224,10 @@ void MainWindow::setupScheduleTab()
     // 手动排课按钮
     Fl_Button *manualBtn = new Fl_Button(x + 260, y, 70, 25, "排课");
     manualBtn->callback(onManualArrange, this);
+
+    // 添加删除排课按钮
+    Fl_Button *deleteScheduleBtn = new Fl_Button(x + 340, y, 70, 25, "删除");
+    deleteScheduleBtn->callback(onDeleteSchedule, this);
 
     // 课表显示
     y += 45;
@@ -349,44 +353,71 @@ void MainWindow::updateScheduleDisplay()
 void MainWindow::onDeleteCourse(Fl_Widget *, void *v)
 {
     MainWindow *win = (MainWindow *)v;
-    int row = win->courseTable->callback_row();
-    if (row == -1)
-    {
-        fl_alert("请选择要删除的课程！");
+
+    // 立即将第一个输入保存到 string 中
+    std::string courseName = fl_input("请输入要删除的课程名称：");
+    if (courseName == "")
         return;
+
+    std::string teacher = fl_input("请输入该课程的授课教师：");
+    if (teacher == "")
+        return;
+
+    // 查找匹配的课程
+    bool found = false;
+    for (const auto &course : win->courseManager->getCourses())
+    {
+        std::cout << "课程名：[" << course.name
+                  << "]，教师：[" << course.teacher << "]" << std::endl;
+
+        if (courseName == course.name && teacher == course.teacher)
+        {
+            found = true;
+            if (fl_choice("确定要删除课程 '%s'（授课教师：%s)吗?", "取消", "确定", 0,
+                          courseName.c_str(), teacher.c_str()) == 1)
+            {
+                win->schedule->removeEntriesForCourse(courseName, teacher);
+                if (win->courseManager->removeCourse(courseName, teacher))
+                {
+                    win->updateCourseTable();
+                    win->updateCourseChoice();
+                    win->updateScheduleDisplay();
+                    win->saveData();
+                    fl_message("课程及其相关排课已删除！");
+                }
+            }
+            break;
+        }
     }
 
-    if (fl_choice("确定要删除选中的课程吗？", "取消", "确定", 0) == 1)
+    if (!found)
     {
-        // 从表格中删除该行
-        win->courseTable->clearData();
-
-        // 新课程选择列表
-        win->updateCourseChoice();
-
-        fl_message("课程已删除！");
+        fl_alert("未找到该教师教授的该课程！");
     }
 }
 
 void MainWindow::onDeleteClassroom(Fl_Widget *, void *v)
 {
     MainWindow *win = (MainWindow *)v;
-    int row = win->classroomTable->callback_row();
-    if (row == -1)
+
+    const char *roomName = fl_input("请输入要删除的教室编号：");
+    if (!roomName)
+        return; // 用户取消输入
+
+    if (fl_choice("确定要删除教室 '%s' 吗？", "取消", "确定", 0, roomName) == 1)
     {
-        fl_alert("请选择要删除的教室！");
-        return;
-    }
-
-    if (fl_choice("确定要删除选中的教室吗？", "取消", "确定", 0) == 1)
-    {
-        // 从表格中删除该行
-        win->classroomTable->clearData();
-
-        // 更新教室选择列表
-        win->updateRoomChoice();
-
-        fl_message("教室已删除！");
+        if (win->classroomManager->removeClassroom(roomName))
+        {
+            win->updateClassroomTable();
+            win->updateRoomChoice();
+            win->updateScheduleDisplay();
+            win->saveData();
+            fl_message("教室已删除！");
+        }
+        else
+        {
+            fl_alert("未找到该教室！");
+        }
     }
 }
 
@@ -551,4 +582,51 @@ MainWindow::~MainWindow()
     delete courseManager;
     delete classroomManager;
     delete schedule;
+}
+
+// 在 MainWindow 类中添加新的静态回调函数
+void MainWindow::onDeleteSchedule(Fl_Widget *, void *v)
+{
+    MainWindow *win = (MainWindow *)v;
+
+    // 立即将第一个输入保存到 string 中
+    const char *input1 = fl_input("请输入要删除排课的课程名称：");
+    if (!input1)
+        return;
+    std::string courseName(input1);
+
+    const char *input2 = fl_input("请输入该课程的授课教师：");
+    if (!input2)
+        return;
+    std::string teacher(input2);
+
+    // 打印调试信息
+    std::cout << "\n正在查找排课记录..." << std::endl;
+    std::cout << "输入的课程名：[" << courseName << "]" << std::endl;
+    std::cout << "输入的教师名：[" << teacher << "]" << std::endl;
+
+    // 查找并删除排课记录
+    bool found = false;
+    for (const auto &entry : win->schedule->getEntries())
+    {
+        if (entry.course.name == courseName && entry.course.teacher == teacher)
+        {
+            found = true;
+            if (fl_choice("确定要删除课程 '%s'（授课教师：%s)的排课记录吗?",
+                          "取消", "确定", 0,
+                          courseName.c_str(), teacher.c_str()) == 1)
+            {
+                win->schedule->removeEntriesForCourse(courseName, teacher);
+                win->updateScheduleDisplay();
+                win->saveData();
+                fl_message("排课记录已删除！");
+            }
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        fl_alert("未找到该课程的排课记录！");
+    }
 }

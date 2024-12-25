@@ -239,4 +239,17 @@ public:
 
         return suggestions;
     }
+
+    // 删除指定课程的所有排课记录
+    void removeEntriesForCourse(const std::string &courseName, const std::string &teacher)
+    {
+        entries.erase(
+            std::remove_if(entries.begin(), entries.end(),
+                           [&](const ScheduleEntry &entry)
+                           {
+                               return entry.course.name == courseName &&
+                                      entry.course.teacher == teacher;
+                           }),
+            entries.end());
+    }
 };
