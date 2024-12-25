@@ -235,29 +235,6 @@ void MainWindow::setupScheduleTab()
 }
 
 /**
- * @brief 初始化课表显示
- * @details 设置课表的表头和时间列
- */
-void MainWindow::initScheduleTable()
-{
-    if (!scheduleTable)
-        return;
-
-    // 设置表头
-    std::vector<std::string> headers = {"时间", "周一", "周二", "周三", "周四", "周五"};
-    scheduleTable->addRow(headers);
-
-    // 设置时间列
-    for (int i = 1; i <= 12; i++)
-    {
-        char timeStr[20];
-        sprintf(timeStr, "第%d节", i);
-        std::vector<std::string> row = {timeStr, "", "", "", "", ""};
-        scheduleTable->addRow(row);
-    }
-}
-
-/**
  * @brief 添加教室的回调函数
  * @param w 触发回调的控件指针（未使用）
  * @param v MainWindow对象指针
