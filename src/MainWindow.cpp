@@ -92,12 +92,18 @@ void MainWindow::setupCourseTab()
     deleteBtn->callback(onDeleteCourse, this);
 
     // === 课程列表表格 ===
-    courseTable = new CourseTable(x, y + 35, w() - 50, h() - 200);
+    y += 35;
+    courseTable = new CourseTable(x, y + 35, w() - 50, h() - y - 80);
+    courseTable->selection_color(FL_YELLOW);
+    courseTable->when(FL_WHEN_RELEASE | FL_WHEN_CHANGED);
     courseTable->col_header(1);      // 显示列表头
-    courseTable->row_header(1);      // 显示行表头
+    courseTable->row_header(0);      // 不显示行表头
     courseTable->cols(4);            // 设置4列：课程名称、时间段、教师、学生人数
     courseTable->col_width_all(120); // 设置列宽
     courseTable->row_height_all(25); // 设置行高
+    
+    // 设置表格为可调整大小的组件
+    courseTab->resizable(courseTable);
 
     // 添加表格列标题
     std::vector<std::string> headers = {
@@ -377,7 +383,7 @@ void MainWindow::onDeleteCourse(Fl_Widget *, void *v)
         // 从表格中删除该行
         win->courseTable->clearData();
 
-        // 更新课程选择列表
+        // ���新课程选择列表
         win->updateCourseChoice();
 
         fl_message("课程已删除！");
