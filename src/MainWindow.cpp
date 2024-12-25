@@ -508,21 +508,31 @@ void MainWindow::onSuggestClassroom(Fl_Widget *, void *v)
         return;
     }
 
-    // 获取建议的教室
-    const Classroom *suggestedRoom = win->schedule->suggestClassroom(*course, *win->classroomManager);
+    // 获取建议的教室列表
+    auto suggestedRooms = win->schedule->suggestClassrooms(*course, *win->classroomManager);
 
-    if (suggestedRoom)
+    if (!suggestedRooms.empty())
     {
-        // 找到建议的教室，自动选中
+        // 构建建议信息
+        std::string message = "建议教室列表：\n\n";
+        int i = 1;
+        for (const auto *room : suggestedRooms)
+        {
+            message += std::to_string(i) + ". " + room->name +
+                       "\n   容量：" + std::to_string(room->capacity) + "人" +
+                       "\n   楼层：" + std::to_string(room->floor) + "\n\n";
+            i++;
+        }
+
+        // 显示建议列表
+        fl_message("%s", message.c_str());
+
+        // 自动选中第一个建议的教室
         for (int i = 0; i < win->roomChoice->size(); i++)
         {
-            if (win->roomChoice->text(i) == suggestedRoom->name)
+            if (win->roomChoice->text(i) == suggestedRooms[0]->name)
             {
                 win->roomChoice->value(i);
-                fl_message("建议使用教室：%s\n容量:%d人\n楼层:%d",
-                           suggestedRoom->name.c_str(),
-                           suggestedRoom->capacity,
-                           suggestedRoom->floor);
                 break;
             }
         }

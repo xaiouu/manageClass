@@ -190,11 +190,13 @@ public:
         return entries;
     }
 
-    // 修改为返回建议的教室指针
-    const Classroom *suggestClassroom(const Course &course, const ClassroomManager &classroomManager) const
+    // 修改为返回多个建议教室
+    std::vector<const Classroom *> suggestClassrooms(const Course &course, const ClassroomManager &classroomManager) const
     {
-        const Classroom *bestRoom = nullptr;
-        int minCapacityDiff = std::numeric_limits<int>::max();
+        std::vector<const Classroom *> suggestions;
+
+        // 存储所有符合条件的教室及其容量差值
+        std::vector<std::pair<const Classroom *, int>> validRooms;
 
         for (const auto &room : classroomManager.getClassrooms())
         {
@@ -215,14 +217,26 @@ public:
                 if (!hasConflict)
                 {
                     int capacityDiff = room.capacity - course.studentCount;
-                    if (capacityDiff < minCapacityDiff)
-                    {
-                        bestRoom = &room;
-                        minCapacityDiff = capacityDiff;
-                    }
+                    validRooms.push_back({&room, capacityDiff});
                 }
             }
         }
-        return bestRoom;
+
+        // 按容量差值排序
+        std::sort(validRooms.begin(), validRooms.end(),
+                  [](const auto &a, const auto &b)
+                  {
+                      return a.second < b.second;
+                  });
+
+        // 取前5个最合适的教室
+        for (const auto &room : validRooms)
+        {
+            suggestions.push_back(room.first);
+            if (suggestions.size() >= 5)
+                break;
+        }
+
+        return suggestions;
     }
 };
