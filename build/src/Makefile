@@ -115,44 +115,6 @@ depend:
 	cd /d C:\cursorProject\c++\manageClass\build && $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 1
 .PHONY : depend
 
-# Convenience name for target.
-src/CMakeFiles/managerClass.dir/rule:
-	cd /d C:\cursorProject\c++\manageClass\build && $(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 src/CMakeFiles/managerClass.dir/rule
-.PHONY : src/CMakeFiles/managerClass.dir/rule
-
-# Convenience name for target.
-managerClass: src/CMakeFiles/managerClass.dir/rule
-.PHONY : managerClass
-
-# fast build rule for target.
-managerClass/fast:
-	cd /d C:\cursorProject\c++\manageClass\build && $(MAKE) $(MAKESILENT) -f src\CMakeFiles\managerClass.dir\build.make src/CMakeFiles/managerClass.dir/build
-.PHONY : managerClass/fast
-
-main.obj: main.cpp.obj
-.PHONY : main.obj
-
-# target to build an object file
-main.cpp.obj:
-	cd /d C:\cursorProject\c++\manageClass\build && $(MAKE) $(MAKESILENT) -f src\CMakeFiles\managerClass.dir\build.make src/CMakeFiles/managerClass.dir/main.cpp.obj
-.PHONY : main.cpp.obj
-
-main.i: main.cpp.i
-.PHONY : main.i
-
-# target to preprocess a source file
-main.cpp.i:
-	cd /d C:\cursorProject\c++\manageClass\build && $(MAKE) $(MAKESILENT) -f src\CMakeFiles\managerClass.dir\build.make src/CMakeFiles/managerClass.dir/main.cpp.i
-.PHONY : main.cpp.i
-
-main.s: main.cpp.s
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.cpp.s:
-	cd /d C:\cursorProject\c++\manageClass\build && $(MAKE) $(MAKESILENT) -f src\CMakeFiles\managerClass.dir\build.make src/CMakeFiles/managerClass.dir/main.cpp.s
-.PHONY : main.cpp.s
-
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -161,10 +123,6 @@ help:
 	@echo ... depend
 	@echo ... edit_cache
 	@echo ... rebuild_cache
-	@echo ... managerClass
-	@echo ... main.obj
-	@echo ... main.i
-	@echo ... main.s
 .PHONY : help
 
 

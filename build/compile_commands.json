@@ -1,8 +1,26 @@
 [
 {
-  "directory": "C:/cursorProject/c++/manageClass/build/src",
-  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/managerClass.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\managerClass.dir\\main.cpp.obj -c C:\\cursorProject\\c++\\manageClass\\src\\main.cpp",
+  "directory": "C:/cursorProject/c++/manageClass/build",
+  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/managerClass.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\managerClass.dir\\src\\CourseTable.cpp.obj -c C:\\cursorProject\\c++\\manageClass\\src\\CourseTable.cpp",
+  "file": "C:/cursorProject/c++/manageClass/src/CourseTable.cpp",
+  "output": "CMakeFiles/managerClass.dir/src/CourseTable.cpp.obj"
+},
+{
+  "directory": "C:/cursorProject/c++/manageClass/build",
+  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/managerClass.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\managerClass.dir\\src\\LoginWindow.cpp.obj -c C:\\cursorProject\\c++\\manageClass\\src\\LoginWindow.cpp",
+  "file": "C:/cursorProject/c++/manageClass/src/LoginWindow.cpp",
+  "output": "CMakeFiles/managerClass.dir/src/LoginWindow.cpp.obj"
+},
+{
+  "directory": "C:/cursorProject/c++/manageClass/build",
+  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/managerClass.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\managerClass.dir\\src\\MainWindow.cpp.obj -c C:\\cursorProject\\c++\\manageClass\\src\\MainWindow.cpp",
+  "file": "C:/cursorProject/c++/manageClass/src/MainWindow.cpp",
+  "output": "CMakeFiles/managerClass.dir/src/MainWindow.cpp.obj"
+},
+{
+  "directory": "C:/cursorProject/c++/manageClass/build",
+  "command": "C:\\mingw64\\bin\\g++.exe  @CMakeFiles/managerClass.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\managerClass.dir\\src\\main.cpp.obj -c C:\\cursorProject\\c++\\manageClass\\src\\main.cpp",
   "file": "C:/cursorProject/c++/manageClass/src/main.cpp",
-  "output": "src/CMakeFiles/managerClass.dir/main.cpp.obj"
+  "output": "CMakeFiles/managerClass.dir/src/main.cpp.obj"
 }
 ]
